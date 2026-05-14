@@ -1,0 +1,57 @@
+# Software License Agreement
+
+1. <span class="header_2" id="1">Software</span>
+    1. <span class="header_3" id="1.1">License.</span>  During the <span class="orderform_link">Subscription Period</span> and subject to the terms of this Agreement, <span class="coverpage_link">Provider</span> grants <span class="coverpage_link">Customer</span> a limited, non-exclusive, non-sublicensable, non-transferable license to install and use the Software on systems owned or controlled by <span class="coverpage_link">Customer</span> for the <span class="orderform_link">Permitted Uses</span>.
+    2. <span class="header_3" id="1.2">User Accounts.</span>  <span class="coverpage_link">Customer</span> is responsible for all actions on Users' accounts and for all Users' compliance with this Agreement. <span class="coverpage_link">Customer</span> and Users must protect the confidentiality of their passwords and login credentials.
+    3. <span class="header_3" id="1.3">Feedback and Usage Data.</span>  <span class="coverpage_link">Customer</span> may, but is not required to, give <span class="coverpage_link">Provider</span> Feedback, in which case <span class="coverpage_link">Customer</span> gives Feedback "AS IS". <span class="coverpage_link">Provider</span> may use all Feedback freely without any restriction or obligation.
+    4. <span class="header_3" id="1.4">Machine Learning.</span>  Usage Data may be used and processed to develop, train, or enhance artificial intelligence or machine learning models that are part of <span class="coverpage_link">Provider's</span> products and services, including third-party components of the Product.
+    5. <span class="header_3" id="1.5">Open Source Software.</span>  If the Software contains Open Source Software, <span class="coverpage_link">Provider</span> will use reasonable efforts to deliver to <span class="coverpage_link">Customer</span> any notices, source code, or other materials required by the license of the Open Source Software.
+    6. <span class="header_3" id="1.6">Updates.</span>  During the <span class="orderform_link">Subscription Period</span>, <span class="coverpage_link">Provider</span> will provide to <span class="coverpage_link">Customer</span>, at no additional charge, Updates that <span class="coverpage_link">Provider</span> makes generally available to its customers who have purchased the same Product and Services as <span class="coverpage_link">Customer</span>.
+    7. <span class="header_3" id="1.7">Reservation of Rights.</span>  <span class="coverpage_link">Provider</span> retains all right, title, and interest in and to the Product, whether developed before or after the <span class="keyterms_link">Effective Date</span>.
+
+2. <span class="header_2" id="2">Restrictions & Obligations</span>
+    1. <span class="header_3" id="2.1">Restrictions on Customer.</span>  Except as expressly permitted by this Agreement, <span class="coverpage_link">Customer</span> will not (and will not allow anyone else to): (i) reverse engineer, decompile, or attempt to discover any source code or underlying ideas or algorithms of the Product; (ii) provide, sell, transfer, sublicense, lend, distribute, rent, or otherwise allow others to access or use the Product; (iii) remove any proprietary notices or labels; (iv) copy, modify, or create derivative works of the Product; or (v) use the Product to develop a competing service or product.
+    2. <span class="header_3" id="2.2">Suspension.</span>  If <span class="coverpage_link">Customer</span> has an outstanding, undisputed balance on its account for more than 30 days, breaches Section 2.1, or uses the Product in violation of the Agreement, then <span class="coverpage_link">Provider</span> may temporarily suspend <span class="coverpage_link">Customer's</span> access to the Product.
+
+3. <span class="header_2" id="3">Payment & Taxes</span>
+    1. <span class="header_3" id="3.1">Fees.</span>  Unless the Order Form specifies a different currency, all Fees are in U.S. Dollars and are exclusive of taxes. Except for the prorated refund of prepaid Fees allowed with specific termination rights given in the Agreement, Fees are non-refundable.
+    2. <span class="header_3" id="3.2">Taxes.</span>  <span class="coverpage_link">Customer</span> is responsible for all duties, taxes, and levies that apply to Fees, including sales, use, VAT, GST, or withholding, that <span class="coverpage_link">Provider</span> itemizes and includes in an invoice. However, <span class="coverpage_link">Customer</span> is not responsible for <span class="coverpage_link">Provider's</span> income taxes.
+
+4. <span class="header_2" id="4">Term & Termination</span>
+    1. <span class="header_3" id="4.1">Order Form and Agreement.</span>  For each Order Form, the Agreement will start on the <span class="orderform_link">Order Date</span>, continue through the <span class="orderform_link">Subscription Period</span>, and automatically renew for additional <span class="orderform_link">Subscription Periods</span> unless one party gives notice of non-renewal to the other party before the <span class="orderform_link">Non-Renewal Notice Date</span>.
+    2. <span class="header_3" id="4.3">Termination.</span>  Either party may terminate the Framework Terms or an Order Form immediately if the other party fails to cure a material breach following 30 days notice, or upon insolvency or similar events.
+    3. <span class="header_3" id="4.5">Effect of Termination.</span>  Upon any expiration or termination, <span class="coverpage_link">Customer</span> will no longer have any right to use the Product and will follow the <span class="orderform_link">Deletion Procedure</span> to remove the Software.
+
+5. <span class="header_2" id="5">Representations & Warranties</span>
+    1. <span class="header_3" id="5.1">Mutual.</span>  Each party represents and warrants to the other that it has the legal power and authority to enter into this Agreement and will comply with all Applicable Laws.
+    2. <span class="header_3" id="5.2">Provider Warranty.</span>  <span class="coverpage_link">Provider</span> warrants that, for the <span class="orderform_link">Warranty Period</span>, the Software will substantially conform in all material respects to the specifications set forth in the Documentation when installed, operated, and used according to the Agreement.
+
+6. <span class="header_2" id="6">Disclaimer of Warranties</span>
+    1. Except for the warranties in Section 5 (Representations & Warranties), <span class="coverpage_link">Provider</span> and <span class="coverpage_link">Customer</span> each **disclaim all other warranties and conditions, whether express or implied, including the implied warranties and conditions of merchantability, fitness for a particular purpose, title, and non-infringement**.
+
+7. <span class="header_2" id="7">Limitation of Liability</span>
+    1. <span class="header_3" id="7.1">Liability Caps.</span>  **Each party's total cumulative liability for all claims arising out of or relating to this Agreement will not be more than the <span class="keyterms_link">General Cap Amount</span>, or the <span class="keyterms_link">Increased Cap Amount</span> for Increased Claims.**
+    2. <span class="header_3" id="7.2">Damages Waiver.</span>  **Under no circumstances will either party be liable to the other for lost profits or revenues (whether direct or indirect), or for consequential, special, indirect, exemplary, punitive, or incidental damages relating to this Agreement.**
+
+8. <span class="header_2" id="8">Indemnification</span>
+    1. <span class="header_3" id="8.1">Protection by Provider.</span>  <span class="coverpage_link">Provider</span> will indemnify, defend, and hold harmless <span class="coverpage_link">Customer</span> from and against all <span class="keyterms_link">Provider Covered Claims</span> made by someone other than <span class="coverpage_link">Customer</span>, <span class="coverpage_link">Customer's</span> Affiliates, or Users.
+    2. <span class="header_3" id="8.2">Protection by Customer.</span>  <span class="coverpage_link">Customer</span> will indemnify, defend, and hold harmless <span class="coverpage_link">Provider</span> from and against all <span class="keyterms_link">Customer Covered Claims</span> made by someone other than <span class="coverpage_link">Provider</span> or its Affiliates.
+
+9. <span class="header_2" id="9">Confidentiality</span>
+    1. <span class="header_3" id="9.1">Non-Use and Non-Disclosure.</span>  Except as otherwise authorized in the Agreement or as needed to fulfill its obligations or exercise its rights under this Agreement, Recipient will not (a) use Discloser's Confidential Information; nor (b) disclose Discloser's Confidential Information to anyone else. Recipient will protect Discloser's Confidential Information using at least the same protections Recipient uses for its own similar information but no less than a reasonable standard of care.
+
+10. <span class="header_2" id="10">General Terms</span>
+    1. <span class="header_3" id="10.1">Entire Agreement.</span>  This Agreement is the only agreement between the parties about its subject and this Agreement supersedes all prior or contemporaneous statements about its subject.
+    2. <span class="header_3" id="10.3">Governing Law and Chosen Courts.</span>  The <span class="keyterms_link">Governing Law</span> will govern all interpretations and disputes about this Agreement. The parties will bring any legal suit, action, or proceeding about this Agreement in the <span class="keyterms_link">Chosen Courts</span>.
+    3. <span class="header_3" id="10.16">Signature.</span>  This Agreement may be signed in counterparts, including by electronic copies or acceptance mechanism.
+
+11. Definitions
+    1. **"Agreement"** means the Order Form between <span class="coverpage_link">Provider</span> and <span class="coverpage_link">Customer</span> as governed by the Framework Terms.
+    2. **"Confidential Information"** means information in any form disclosed by or on behalf of a Discloser to a Recipient in connection with this Agreement that (a) the Discloser identifies as "confidential", "proprietary", or the like; or (b) should be reasonably understood as confidential or proprietary due to its nature and the circumstances of its disclosure.
+    3. **"Open Source Software"** means any software that is distributed as "free software", as "open source software", under a "copyleft" agreement, or is otherwise subject to the terms of any license that requires disclosure or distribution in source code form.
+    4. **"Software"** means the product described in the Order Form and provided Updates.
+    5. **"Standard Terms"** means these Common Paper Software License Standard Terms Version 1.1, which are posted at <https://commonpaper.com/standards/software-license-agreement/1.1>.
+    6. **"Updates"** means updates and maintenance releases to the Software made available by <span class="coverpage_link">Provider</span> to <span class="coverpage_link">Customer</span>.
+    7. **"User"** means any individual who uses the Product on <span class="coverpage_link">Customer's</span> behalf or through <span class="coverpage_link">Customer's</span> account.
+
+Common Paper Software License Agreement [Version 1.1](https://commonpaper.com/standards/software-license-agreement/1.1) free to use under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
