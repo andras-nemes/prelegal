@@ -1,2 +1,3 @@
 # prelegal
-A platform for drafting common legal agreements
+
+This project is still in progress, please come back for more later.
