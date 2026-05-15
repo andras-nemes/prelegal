@@ -6,7 +6,7 @@ COPY frontend/ ./
 RUN npm run build
 
 FROM python:3.12-slim
-WORKDIR /app
+WORKDIR /app/backend
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
@@ -14,7 +14,7 @@ COPY backend/pyproject.toml backend/uv.lock* ./
 RUN uv sync --frozen --no-dev
 
 COPY backend/main.py ./
-COPY --from=frontend-builder /app/frontend/out ./frontend/out
+COPY --from=frontend-builder /app/frontend/out /app/frontend/out
 
 ENV PYTHONUNBUFFERED=1
 
