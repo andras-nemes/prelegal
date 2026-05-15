@@ -1,5 +1,9 @@
-import { redirect } from "next/navigation";
+import type { NextConfig } from "next";
 
-export default function Home() {
-  redirect("/login");
-}
+  const nextConfig: NextConfig = {
+    output: "export",
+    trailingSlash: true,
+    transpilePackages: ["@react-pdf/renderer"],
+  };
+
+  export default nextConfig;
