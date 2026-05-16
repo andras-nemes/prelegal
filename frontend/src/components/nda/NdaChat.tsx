@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 import type { NdaFormData } from "@/types/nda";
 
 interface Message {
@@ -19,11 +20,13 @@ interface Props {
 }
 
 export default function NdaChat({ onFieldsUpdate, onReset }: Props) {
+  const { token } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const sessionId = useRef(crypto.randomUUID());
 
   useEffect(() => {
     fetchAiMessage([]);
@@ -42,8 +45,11 @@ export default function NdaChat({ onFieldsUpdate, onReset }: Props) {
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: msgs }),
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ messages: msgs, session_id: sessionId.current }),
       });
       if (!res.ok) throw new Error(`Server error: ${res.status}`);
       const data: ChatApiResponse = await res.json();
@@ -75,6 +81,7 @@ export default function NdaChat({ onFieldsUpdate, onReset }: Props) {
   }
 
   function handleReset() {
+    sessionId.current = crypto.randomUUID();
     setLoading(true);
     setMessages([]);
     onReset();
