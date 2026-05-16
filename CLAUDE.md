@@ -19,7 +19,9 @@ When instructed to build a feature:
 
 ## AI design
 
-When writing code to make calls to LLMs, use your Cerebras skill to use LiteLLM via OPENAI to the `GPT-5.4` model with Cerebras as the inference provider. You'll find my OPENAI API key in the .env file in the project root. You should use Structured Outputs so that you can interpret the results and populate fields in the legal document.
+Use LiteLLM with `gpt-4o` via a direct OpenAI API key. The key is stored as `OPENAI_API_KEY` in the `.env` file in the project root. Use Structured Outputs (Pydantic response_format) so results can be parsed and used to populate fields in the legal document.
+
+Note: the Cerebras skill in `.claude/skills/cerebras` documents an alternative routing path via OpenRouter. It requires an OpenRouter API key (not a plain OpenAI key) and will not work with the current `.env` setup.
 
 ## Technical design
 
@@ -61,12 +63,15 @@ Backend available at http://localhost:8000
 - Dockerfile (multi-stage: Node 22 Alpine build -> Python 3.12 slim runtime)
 - Start/stop scripts for Mac, Linux, Windows in `scripts/`
 
-**PL-7** - AI Chat for Mutual NDA (`feature/PL-7-ai-chat`)
-- `POST /api/chat` endpoint in `backend/main.py`: accepts message history, calls LiteLLM (`gpt-5.4` via Cerebras) with structured output `{message, fields}`, returns the AI reply and updated NDA field values
+**PL-7** - AI Chat for Mutual NDA (`feature/PL-7-ai-chat`, open PR)
+- `POST /api/chat` endpoint in `backend/main.py`: accepts message history, calls LiteLLM (`gpt-4o`) with structured output `{message, fields}`, returns the AI reply and updated NDA field values
 - `backend/` dependencies extended: `litellm`, `python-dotenv`; `uv.lock` updated
 - New `NdaChat` component (`frontend/src/components/nda/NdaChat.tsx`): freeform chat UI, auto-fetches AI greeting on mount, merges field updates into live PDF preview after each AI turn
-- `NdaPage` left column replaced: `NdaForm` removed, `NdaChat` added; PDF preview and download button unchanged
+- `NdaPage` left column replaced: `NdaForm` removed, `NdaChat` added; PDF preview and download button pinned below chat
 - Start scripts updated to pass `--env-file .env` to `docker run` so `OPENAI_API_KEY` reaches the container
+- AI system prompt drives a guided conversation: acknowledges each value by name, asks about 1-3 unfilled fields per turn, never ends without a follow-up question, confirms completion when all fields are filled
+- Textarea auto-focuses after each AI response (useEffect watching loading state)
+- `min-h-0` on the NdaChat flex wrapper keeps the Download PDF button pinned at the bottom of the sidebar regardless of message count
 
 ### Not yet started
 
