@@ -1,11 +1,16 @@
+import json
+import os
 import sqlite3
 from contextlib import asynccontextmanager
-from datetime import date
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Literal
 
+import bcrypt
+import jwt
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.staticfiles import StaticFiles
 from litellm import completion
 from pydantic import BaseModel, Field, create_model
@@ -14,8 +19,26 @@ load_dotenv()
 
 DB_PATH = Path(__file__).parent / "prelegal.db"
 FRONTEND_OUT = Path(__file__).parent.parent / "frontend" / "out"
-
+SECRET_KEY = os.getenv("SECRET_KEY", "prelegal-dev-secret-key-change-in-production")
+TOKEN_EXPIRE_DAYS = 7
 MODEL = "gpt-4o"
+
+bearer_scheme = HTTPBearer()
+
+DOCUMENT_NAMES: dict[str, str] = {
+    "mutual-nda": "Mutual Non-Disclosure Agreement",
+    "mutual-nda-coverpage": "Mutual NDA Cover Page",
+    "csa": "Cloud Service Agreement",
+    "design-partner-agreement": "Design Partner Agreement",
+    "sla": "Service Level Agreement",
+    "psa": "Professional Services Agreement",
+    "dpa": "Data Processing Agreement",
+    "software-license-agreement": "Software License Agreement",
+    "partnership-agreement": "Partnership Agreement",
+    "pilot-agreement": "Pilot Agreement",
+    "baa": "Business Associate Agreement",
+    "ai-addendum": "AI Addendum",
+}
 
 # Field definitions: list of (field_name, human-readable description)
 DOCUMENT_FIELDS: dict[str, list[tuple[str, str]]] = {
@@ -238,6 +261,36 @@ def make_response_model(field_names: list[str]):
     )
 
 
+def create_token(user_id: int) -> str:
+    expire = datetime.now(timezone.utc) + timedelta(days=TOKEN_EXPIRE_DAYS)
+    return jwt.encode({"sub": str(user_id), "exp": expire}, SECRET_KEY, algorithm="HS256")
+
+
+def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme)) -> int:
+    try:
+        payload = jwt.decode(credentials.credentials, SECRET_KEY, algorithms=["HS256"])
+        return int(payload["sub"])
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid or expired token")
+
+
+def upsert_document(user_id: int, session_id: str, document_type: str, fields: dict) -> None:
+    name = DOCUMENT_NAMES.get(document_type, document_type.replace("-", " ").title())
+    with sqlite3.connect(DB_PATH) as conn:
+        conn.execute(
+            """
+            INSERT INTO documents (user_id, session_id, document_type, document_name, fields_json, updated_at)
+            VALUES (?, ?, ?, ?, ?, datetime('now'))
+            ON CONFLICT(user_id, session_id) DO UPDATE SET
+                fields_json = excluded.fields_json,
+                document_name = excluded.document_name,
+                updated_at = excluded.updated_at
+            """,
+            (user_id, session_id, document_type, name, json.dumps(fields)),
+        )
+        conn.commit()
+
+
 def init_db() -> None:
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute(
@@ -247,6 +300,20 @@ def init_db() -> None:
                 email      TEXT    NOT NULL UNIQUE,
                 password   TEXT    NOT NULL,
                 created_at TEXT    NOT NULL DEFAULT (datetime('now'))
+            )
+            """
+        )
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS documents (
+                id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id       INTEGER NOT NULL REFERENCES users(id),
+                session_id    TEXT    NOT NULL,
+                document_type TEXT    NOT NULL,
+                document_name TEXT    NOT NULL,
+                fields_json   TEXT    NOT NULL,
+                updated_at    TEXT    NOT NULL DEFAULT (datetime('now')),
+                UNIQUE(user_id, session_id)
             )
             """
         )
@@ -262,6 +329,20 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(lifespan=lifespan)
 
+
+# ----- Auth models -----
+
+class SignupRequest(BaseModel):
+    email: str
+    password: str
+
+
+class AuthResponse(BaseModel):
+    token: str
+    email: str
+
+
+# ----- Chat models -----
 
 class ChatMessage(BaseModel):
     role: Literal["user", "assistant"]
@@ -294,11 +375,13 @@ class ChatResponse(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: list[ChatMessage]
+    session_id: str = ""
 
 
 class DocumentChatRequest(BaseModel):
     document_type: str
     messages: list[ChatMessage]
+    session_id: str = ""
 
 
 class DocumentChatResponse(BaseModel):
@@ -306,13 +389,73 @@ class DocumentChatResponse(BaseModel):
     fields: dict[str, str]
 
 
+class DocumentSummary(BaseModel):
+    id: int
+    document_type: str
+    document_name: str
+    fields_json: str
+    updated_at: str
+
+
+# ----- Auth endpoints -----
+
+@app.post("/api/auth/signup", response_model=AuthResponse)
+def signup(req: SignupRequest):
+    hashed = bcrypt.hashpw(req.password.encode(), bcrypt.gensalt()).decode()
+    try:
+        with sqlite3.connect(DB_PATH) as conn:
+            cursor = conn.execute(
+                "INSERT INTO users (email, password) VALUES (?, ?)",
+                (req.email, hashed),
+            )
+            user_id = cursor.lastrowid
+            conn.commit()
+    except sqlite3.IntegrityError:
+        raise HTTPException(status_code=409, detail="Email already registered")
+    return AuthResponse(token=create_token(user_id), email=req.email)
+
+
+@app.post("/api/auth/signin", response_model=AuthResponse)
+def signin(req: SignupRequest):
+    with sqlite3.connect(DB_PATH) as conn:
+        row = conn.execute(
+            "SELECT id, password FROM users WHERE email = ?", (req.email,)
+        ).fetchone()
+    if not row or not bcrypt.checkpw(req.password.encode(), row[1].encode()):
+        raise HTTPException(status_code=401, detail="Invalid email or password")
+    return AuthResponse(token=create_token(row[0]), email=req.email)
+
+
+# ----- Document history endpoint -----
+
+@app.get("/api/documents", response_model=list[DocumentSummary])
+def list_documents(user_id: int = Depends(get_current_user)):
+    with sqlite3.connect(DB_PATH) as conn:
+        rows = conn.execute(
+            "SELECT id, document_type, document_name, fields_json, updated_at "
+            "FROM documents WHERE user_id = ? ORDER BY updated_at DESC",
+            (user_id,),
+        ).fetchall()
+    return [
+        DocumentSummary(
+            id=r[0], document_type=r[1], document_name=r[2],
+            fields_json=r[3], updated_at=r[4],
+        )
+        for r in rows
+    ]
+
+
+# ----- Health -----
+
 @app.get("/api/health")
 def health():
     return {"status": "ok"}
 
 
+# ----- Chat endpoints -----
+
 @app.post("/api/chat", response_model=ChatResponse)
-def chat(req: ChatRequest):
+def chat(req: ChatRequest, user_id: int = Depends(get_current_user)):
     system = NDA_SYSTEM_PROMPT.format(today=date.today().isoformat())
     messages = [{"role": "system", "content": system}]
     messages += [{"role": m.role, "content": m.content} for m in req.messages]
@@ -325,13 +468,16 @@ def chat(req: ChatRequest):
             messages=messages,
             response_format=ChatResponse,
         )
-        return ChatResponse.model_validate_json(response.choices[0].message.content)
+        result = ChatResponse.model_validate_json(response.choices[0].message.content)
+        if req.session_id:
+            upsert_document(user_id, req.session_id, "mutual-nda", result.fields.model_dump())
+        return result
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.post("/api/document-chat", response_model=DocumentChatResponse)
-def document_chat(req: DocumentChatRequest):
+def document_chat(req: DocumentChatRequest, user_id: int = Depends(get_current_user)):
     field_defs = DOCUMENT_FIELDS.get(req.document_type)
     if not field_defs:
         raise HTTPException(status_code=400, detail=f"Unknown document type: {req.document_type}")
@@ -355,10 +501,10 @@ def document_chat(req: DocumentChatRequest):
             response_format=ResponseModel,
         )
         parsed = ResponseModel.model_validate_json(response.choices[0].message.content)
-        return DocumentChatResponse(
-            message=parsed.message,
-            fields=dict(parsed.fields),
-        )
+        fields = dict(parsed.fields)
+        if req.session_id:
+            upsert_document(user_id, req.session_id, req.document_type, fields)
+        return DocumentChatResponse(message=parsed.message, fields=fields)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
