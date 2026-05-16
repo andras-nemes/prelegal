@@ -8,7 +8,7 @@ export default function LoginPage() {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
-    router.push("/nda");
+    router.push("/");
   }
 
   return (
