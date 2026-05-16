@@ -31,7 +31,7 @@ export default function NdaPage() {
 
       <div className="flex flex-1 overflow-hidden">
         <aside className="w-96 flex-shrink-0 bg-white border-r border-gray-200 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-hidden flex flex-col">
+          <div className="flex-1 overflow-hidden flex flex-col min-h-0">
             <NdaChat
               onFieldsUpdate={setFormData}
               onReset={() => setFormData(DEFAULT_NDA)}

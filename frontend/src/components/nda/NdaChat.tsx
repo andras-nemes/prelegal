@@ -33,6 +33,10 @@ export default function NdaChat({ onFieldsUpdate, onReset }: Props) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  useEffect(() => {
+    if (!loading) inputRef.current?.focus();
+  }, [loading]);
+
   async function fetchAiMessage(msgs: Message[]) {
     setLoading(true);
     try {
@@ -50,7 +54,6 @@ export default function NdaChat({ onFieldsUpdate, onReset }: Props) {
       setMessages((prev) => [...prev, { role: "assistant", content: `Error: ${message}` }]);
     } finally {
       setLoading(false);
-      inputRef.current?.focus();
     }
   }
 
