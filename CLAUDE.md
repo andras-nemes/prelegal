@@ -6,7 +6,7 @@ This is a SaaS product to allow users to draft legal agreements based on templat
 
 @catalog.json
 
-> PL-5 shipped a frontend-only prototype (Next.js, no backend) supporting the Mutual NDA document with no AI chat. PL-6 added the full technical foundation. PL-7 replaced the static NDA form with an AI chat interface (see Implementation Status below).
+> PL-5 shipped a frontend-only prototype (Next.js, no backend) supporting the Mutual NDA document with no AI chat. PL-6 added the full technical foundation. PL-7 replaced the static NDA form with an AI chat interface. PL-8 expanded support to all 12 document types in the catalog (see Implementation Status below).
 
 ## Development process
 
@@ -63,7 +63,7 @@ Backend available at http://localhost:8000
 - Dockerfile (multi-stage: Node 22 Alpine build -> Python 3.12 slim runtime)
 - Start/stop scripts for Mac, Linux, Windows in `scripts/`
 
-**PL-7** - AI Chat for Mutual NDA (`feature/PL-7-ai-chat`, open PR)
+**PL-7** - AI Chat for Mutual NDA (`feature/PL-7-ai-chat`, merged)
 - `POST /api/chat` endpoint in `backend/main.py`: accepts message history, calls LiteLLM (`gpt-4o`) with structured output `{message, fields}`, returns the AI reply and updated NDA field values
 - `backend/` dependencies extended: `litellm`, `python-dotenv`; `uv.lock` updated
 - New `NdaChat` component (`frontend/src/components/nda/NdaChat.tsx`): freeform chat UI, auto-fetches AI greeting on mount, merges field updates into live PDF preview after each AI turn
@@ -73,10 +73,19 @@ Backend available at http://localhost:8000
 - Textarea auto-focuses after each AI response (useEffect watching loading state)
 - `min-h-0` on the NdaChat flex wrapper keeps the Download PDF button pinned at the bottom of the sidebar regardless of message count
 
+**PL-8** - All document types (`feature/PL-8-all-document-types`, PR #7)
+- Document registry in `backend/main.py`: field definitions for all 12 document types, `make_document_system_prompt()` generates per-type system prompts, `make_response_model()` creates Pydantic models dynamically via `create_model()`
+- `POST /api/document-chat` endpoint: accepts `{document_type, messages}`, returns `{message, fields: dict[str, str]}`; existing `POST /api/chat` (NDA) is unchanged
+- `frontend/src/config/documents.ts`: client-side document registry with slugs, field labels, and routing config (`useNdaRoute: true` for Mutual NDA routes to `/nda`, all others to `/documents/[slug]`)
+- Catalog page at `/` (`frontend/src/app/page.tsx`): 3-column grid of all 12 document cards; login now redirects here instead of `/nda`
+- Dynamic route `/documents/[slug]` with `generateStaticParams` covering all 11 non-NDA types; server component awaits `params` Promise (Next.js 16), delegates to `DocumentPageClient` client component
+- `DocumentChat` component calls `/api/document-chat`; `GenericDocument.tsx` renders collected `Record<string, string>` fields as a live PDF key-value layout
+- `frontend/src/types/document.ts`: `DocumentFields = Record<string, string>`
+- The AI system prompt for each document type lists all field names and instructs the model to suggest the closest supported document if the user asks for an unsupported type
+
 ### Not yet started
 
 - Real authentication (sign up / sign in backed by the users table)
-- Support for documents beyond the Mutual NDA
 
 ## Color Scheme
 
