@@ -15,8 +15,7 @@ load_dotenv()
 DB_PATH = Path(__file__).parent / "prelegal.db"
 FRONTEND_OUT = Path(__file__).parent.parent / "frontend" / "out"
 
-MODEL = "gpt-5.4"
-EXTRA_BODY = {"provider": {"order": ["cerebras"]}}
+MODEL = "gpt-4o"
 
 SYSTEM_PROMPT = """\
 You are a legal assistant helping a user create a Mutual Non-Disclosure Agreement (MNDA).
@@ -115,8 +114,6 @@ def chat(req: ChatRequest):
             model=MODEL,
             messages=messages,
             response_format=ChatResponse,
-            reasoning_effort="low",
-            extra_body=EXTRA_BODY,
         )
         return ChatResponse.model_validate_json(response.choices[0].message.content)
     except Exception as e:
