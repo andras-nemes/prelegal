@@ -67,3 +67,9 @@ Thumbs.db
 # Database
 *.sqlite3
 *.db
+
+# Playwright test artifacts
+.playwright-mcp/
+
+# TypeScript build cache
+frontend/tsconfig.tsbuildinfo
